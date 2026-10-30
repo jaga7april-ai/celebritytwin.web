@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CelebTwin AI — Find Your Celebrity Doppelgänger</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="bg-grid"></div>
+
+    <div class="container">
+        <!-- Navigation Header -->
+        <header class="navbar">
+            <a href="#" class="brand">
+                <div class="brand-icon">✨</div>
+                <div>
+                    <span class="brand-title">CelebTwin AI</span>
+                    <span class="brand-badge">PRO v2.5</span>
+                </div>
+            </a>
+            <div class="nav-actions">
+                <button id="photoModeToggleBtn" class="icon-btn" title="Switch between real celebrity photographs and stylized portraits">📸 Real Photos</button>
+                <button id="soundToggleBtn" class="icon-btn">🔊 Sound: ON</button>
+                <button id="howItWorksBtn" class="icon-btn">ℹ️ How It Works</button>
+                <button id="celebDirectoryBtn" class="icon-btn">🌟 All Stars</button>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero-header">
+            <div class="hero-pill">⚡ Powered by Biometric Geometry & Vector Matching</div>
+            <h1 class="hero-title">Who is Your <span class="gradient-text">Celebrity Doppelgänger</span>?</h1>
+            <p class="hero-subtitle">
+                Upload your picture or snap a live selfie to scan your facial symmetry, cheekbones, and jawline structure against Bollywood, Kollywood, Hollywood & Global icons.
+            </p>
+        </section>
+
+        <!-- Photo Input Main Dashboard Card -->
+        <main class="main-card">
+            <!-- Mode Switch Tabs -->
+            <div class="tabs-container">
+                <button class="tab-btn active" data-tab="tabUpload">
+                    <span>📁</span> Upload Photo
+                </button>
+                <button class="tab-btn" data-tab="tabCamera">
+                    <span>📸</span> Live Camera
+                </button>
+                <button class="tab-btn" data-tab="tabSamples">
+                    <span>🎭</span> Sample Faces
+                </button>
+            </div>
+
+            <!-- Tab 1: Upload Photo -->
+            <div id="tabUpload" class="tab-content active">
+                <div id="dropzone" class="dropzone">
+                    <input type="file" id="uploadInput" accept="image/*" style="display: none;">
+                    <div class="drop-icon">📷</div>
+                    <h3 class="drop-title">Drag & Drop Your Photo Here</h3>
+                    <p class="drop-desc">Supports JPG, PNG, WEBP (or simply press Ctrl+V to paste from clipboard)</p>
+                    <button id="selectFileBtn" class="primary-btn">
+                        <span>Browse Device</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab 2: Live Camera -->
+            <div id="tabCamera" class="tab-content">
+                <div class="camera-wrapper">
+                    <video id="cameraVideo" autoplay playsinline muted></video>
+                    <div class="camera-guide-oval"></div>
+                    <div id="camCountdown" style="display: none; position: absolute; font-size: 5rem; font-weight: 900; color: #fff; text-shadow: 0 0 20px #06b6d4;">3</div>
+                </div>
+                <div class="camera-controls">
+                    <button id="snapBtn" class="primary-btn">
+                        <span>📸 Capture Selfie</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab 3: Sample Faces -->
+            <div id="tabSamples" class="tab-content">
+                <p style="text-align: center; color: var(--text-muted); margin-bottom: 1.25rem; font-size: 0.9rem;">
+                    Don't have a photo right now? Select one of our diverse sample portraits to test the biometric engine:
+                </p>
+                <div id="sampleFacesGrid" class="sample-faces-grid">
+                    <!-- Populated dynamically via sampleFaces.js -->
+                </div>
+            </div>
+
+            <!-- Match Customization Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label for="genderFilter" class="filter-label">Doppelgänger Preference:</label>
+                    <select id="genderFilter" class="filter-select">
+                        <option value="auto" selected>✨ Auto-Detect Gender (Smart AI)</option>
+                        <option value="male">Male Celebrities Only</option>
+                        <option value="female">Female Celebrities Only</option>
+                        <option value="any">Any Gender Presentation</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="categoryFilter" class="filter-label">Celebrity Industry:</label>
+                    <select id="categoryFilter" class="filter-select">
+                        <option value="all">All Industries (Bollywood, Kollywood, Hollywood, Pop)</option>
+                        <option value="bollywood">Bollywood (Hindi Cinema)</option>
+                        <option value="kollywood">Kollywood (Tamil Cinema)</option>
+                        <option value="cinema">Hollywood & Western Cinema</option>
+                        <option value="music">Music & Pop Icons</option>
+                    </select>
+                </div>
+
+                <div style="font-size: 0.8rem; color: #10b981; display: flex; align-items: center; gap: 0.35rem;">
+                    <span>🔒</span> 100% Client-Side & Private
+                </div>
+            </div>
+        </main>
+
+        <!-- Scanning HUD & Biometric Animation Section -->
+        <section id="scanningSection" class="scanning-section">
+            <div class="scan-hud-container">
+                <img id="scanUserImg" src="" alt="Scanning photo">
+                <canvas id="scanHudCanvas"></canvas>
+                <div class="laser-line"></div>
+                <div class="hud-bracket hud-tl"></div>
+                <div class="hud-bracket hud-tr"></div>
+                <div class="hud-bracket hud-bl"></div>
+                <div class="hud-bracket hud-br"></div>
+            </div>
+
+            <h3 id="scanStatusText" class="scan-status-title">Detecting Facial Geometry...</h3>
+            <div id="hudGenderIndicator" style="display: none; margin: -0.25rem 0 0.85rem; font-size: 1rem; font-weight: 700; color: #67e8f9; text-shadow: 0 0 15px rgba(6,182,212,0.8);"></div>
+            <div class="scan-progress-bar-bg">
+                <div id="scanProgressBar" class="scan-progress-fill"></div>
+            </div>
+            <ul class="scan-steps-list">
+                <li class="active">① Boundary & Symmetry</li>
+                <li>② Geometry Extraction</li>
+                <li>③ Gender Identification</li>
+                <li>④ Vector Matching</li>
+            </ul>
+        </section>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="results-section">
+            <div class="results-header">
+                <div class="results-badge">✨ BIOMETRIC MATCH VERIFIED</div>
+                <h2 style="font-size: 2.2rem; font-weight: 800;">Your Celebrity Doppelgänger</h2>
+                <p style="color: var(--text-muted); font-size: 1rem;">Based on your unique facial proportions, symmetry, and bone structure.</p>
+            </div>
+
+            <!-- Top Match Spotlight & Split Curtain Comparison -->
+            <div class="match-hero-grid">
+                <!-- Interactive Split Slider -->
+                <div class="comparison-slider-box" id="comparisonSliderBox">
+                    <!-- Celebrity Image (Underneath) -->
+                    <img id="matchHeroImg" class="comparison-image" src="" alt="Celebrity Doppelgänger">
+                    <!-- User Image (Overlaid Curtain) -->
+                    <div class="comparison-overlay" id="comparisonOverlay">
+                        <img id="comparisonOverlayImg" src="" alt="Your Photo">
+                    </div>
+                    <!-- Draggable Handle -->
+                    <div class="slider-handle" id="sliderHandle">↔</div>
+                    <span class="slider-label slider-label-user">You</span>
+                    <span class="slider-label slider-label-celeb">Twin</span>
+                </div>
+
+                <!-- Match Details -->
+                <div class="match-details">
+                    <div class="match-header-row">
+                        <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+                            <div id="matchScoreVal" class="match-score-badge">94.8% Match</div>
+                            <span id="detectedGenderBadge" class="gender-detected-badge">👩 Female (94% AI)</span>
+                        </div>
+                        <span id="matchKnownFor" class="match-known-for">★ Hollywood Cinema</span>
+                    </div>
+
+                    <h3 id="matchName" class="match-name">Celebrity Name</h3>
+                    <div id="matchVibe" class="match-vibe-pill">⚡ Twin Vibe: Magnetic Red Carpet Presence</div>
+                    <blockquote id="matchQuote" class="match-quote">“Celebrity quote goes here.”</blockquote>
+                    <p id="matchFunFact" style="font-size: 0.85rem; color: #94a3b8; background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 8px;">
+                        💡 Doppelgänger Note
+                    </p>
+
+                    <!-- Feature Breakdown -->
+                    <div class="breakdown-section">
+                        <div class="breakdown-title">Biometric Similarity Breakdown</div>
+                        
+                        <div class="breakdown-row">
+                            <div class="breakdown-meta">
+                                <span>Eyes & Brow Archetype</span>
+                                <strong id="scoreEyes">94%</strong>
+                            </div>
+                            <div class="bar-track">
+                                <div id="barEyes" class="bar-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="breakdown-row">
+                            <div class="breakdown-meta">
+                                <span>Jawline Definition & Chin</span>
+                                <strong id="scoreJaw">91%</strong>
+                            </div>
+                            <div class="bar-track">
+                                <div id="barJaw" class="bar-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="breakdown-row">
+                            <div class="breakdown-meta">
+                                <span>Cheekbone Prominence & Width</span>
+                                <strong id="scoreCheekbones">96%</strong>
+                            </div>
+                            <div class="bar-track">
+                                <div id="barCheekbones" class="bar-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="breakdown-row">
+                            <div class="breakdown-meta">
+                                <span>Smile & Expression Curvature</span>
+                                <strong id="scoreSmile">89%</strong>
+                            </div>
+                            <div class="bar-track">
+                                <div id="barSmile" class="bar-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Runners Up Section -->
+            <h3 class="section-heading">🌟 Other Stars You Strongly Resemble</h3>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin-top: -0.75rem; margin-bottom: 1.25rem;">
+                Click any runner-up to view their full comparison and trait breakdown.
+            </p>
+            <div id="runnersUpGrid" class="runners-up-grid">
+                <!-- Populated dynamically via JS -->
+            </div>
+
+            <!-- Facial Geometry & Radar Visualizer -->
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem;">🕸️ Facial Geometry Radar</h3>
+                    <p style="color: var(--text-dim); font-size: 0.8rem; margin-bottom: 1rem;">
+                        <span style="color: #06b6d4;">■ Your Proportions</span> vs <span style="color: #ec4899;">■ Celebrity Twin</span>
+                    </p>
+                    <div class="radar-canvas-box">
+                        <canvas id="radarCanvas" width="300" height="300"></canvas>
+                    </div>
+                </div>
+
+                <div class="analytics-card">
+                    <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem;">📐 Biometric Traits Profile</h3>
+                    <p style="color: var(--text-dim); font-size: 0.8rem; margin-bottom: 1rem;">
+                        Derived geometric facial classification from your uploaded photo:
+                    </p>
+                    <ul id="traitsList" class="traits-list">
+                        <!-- Populated dynamically via JS -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Action Banner -->
+            <div class="action-banner">
+                <button id="downloadCardBtn" class="primary-btn">
+                    <span>🎫 Download VIP Doppelgänger Card</span>
+                </button>
+                <button id="shareBtn" class="secondary-btn">
+                    <span>📤 Share Match</span>
+                </button>
+                <button id="restartBtn" class="secondary-btn">
+                    <span>🔄 Try Another Photo</span>
+                </button>
+            </div>
+
+            <!-- Hidden User Image Reference for Composite Card -->
+            <img id="matchUserImg" src="" style="display: none;" alt="User Photo">
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p>CelebTwin AI • Client-Side Facial Biometrics & Feature Vector Matching</p>
+            <p style="margin-top: 0.35rem; font-size: 0.75rem;">Photos are processed purely in your browser canvas. No images are sent to any cloud server.</p>
+        </footer>
+    </div>
+
+    <!-- Modal: How It Works -->
+    <div id="howItWorksModal" class="modal-backdrop">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 style="font-size: 1.35rem; font-weight: 800;">ℹ️ How CelebTwin AI Works</h3>
+                <button class="close-btn close-modal">&times;</button>
+            </div>
+            <div style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.6;">
+                <p style="margin-bottom: 1rem;">
+                    CelebTwin AI analyzes your uploaded picture or webcam selfie directly in your browser using HTML5 Canvas pixel analytics and computer vision geometry:
+                </p>
+                <ol style="margin-left: 1.5rem; margin-bottom: 1.25rem;">
+                    <li style="margin-bottom: 0.5rem;"><strong>Skin & Bounding Detection:</strong> Maps your face center of mass and bounding box dimensions.</li>
+                    <li style="margin-bottom: 0.5rem;"><strong>Feature Profiling:</strong> Computes aspect ratio, bilateral symmetry across the facial midline, cheekbone prominence, jaw angle, and smile curvature.</li>
+                    <li style="margin-bottom: 0.5rem;"><strong>12-Dimensional Vector:</strong> Normalizes your facial measurements into a multi-attribute vector.</li>
+                    <li style="margin-bottom: 0.5rem;"><strong>Cosine & Weighted Similarity:</strong> Compares your vector against our curated database of world-renowned celebrities to find your closest visual twin.</li>
+                </ol>
+                <p style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.85rem; border-radius: 8px; color: #a7f3d0; font-size: 0.85rem;">
+                    🔒 <strong>Privacy Assurance:</strong> Zero network uploads. All image processing occurs strictly on your machine in real time.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Celebrity Directory -->
+    <div id="celebDirectoryModal" class="modal-backdrop">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 style="font-size: 1.35rem; font-weight: 800;">🌟 Celebrity Database Roster</h3>
+                <button class="close-modal close-btn">&times;</button>
+            </div>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem;">
+                Explore all world-famous stars currently indexed in the facial vector database:
+            </p>
+            <div id="dirCategoryTabs" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem;">
+                <button class="dir-tab-btn active" data-cat="all">All Stars (43)</button>
+                <button class="dir-tab-btn" data-cat="Bollywood">Bollywood (10)</button>
+                <button class="dir-tab-btn" data-cat="Kollywood">Kollywood (11)</button>
+                <button class="dir-tab-btn" data-cat="Cinema">Hollywood (17)</button>
+                <button class="dir-tab-btn" data-cat="Music">Music (5)</button>
+            </div>
+            <div id="celebDirectoryGrid" class="celeb-directory-grid">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="celebrities.js"></script>
+    <script src="sampleFaces.js"></script>
+    <script src="soundFx.js"></script>
+    <script src="faceAnalyzer.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
